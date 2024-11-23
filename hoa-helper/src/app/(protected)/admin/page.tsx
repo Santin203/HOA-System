@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function AdminDashboard() {
   interface Owner {
-    id: number;
+    id: string;
     name: string;
     property: string;
     status: string;
@@ -12,17 +12,17 @@ export default function AdminDashboard() {
 
   // Sample data for demonstration purposes
   const [owners, setOwners] = useState<Owner[]>([
-    { id: 1, name: "John Doe", property: "123 Maple St", status: "Paid" },
-    { id: 2, name: "Jane Smith", property: "456 Oak St", status: "Pending" },
-    { id: 3, name: "Alice Johnson", property: "789 Pine St", status: "Paid" },
-    { id: 4, name: "Bob Brown", property: "101 Cedar Ave", status: "Pending" },
+    { id: "1", name: "John Doe", property: "123 Maple St", status: "Paid" },
+    { id: "2", name: "Jane Smith", property: "456 Oak St", status: "Pending" },
+    { id: "3", name: "Alice Johnson", property: "789 Pine St", status: "Paid" },
+    { id: "4", name: "Bob Brown", property: "101 Cedar Ave", status: "Pending" },
   ]);
 
   const [filter, setFilter] = useState<string>("All");
 //   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Function to handle sending a reminder
-  const sendReminder = (id: number): void => {
+  const sendReminder = (id: string): void => {
     const owner = owners.find((o) => o.id === id);
     if (owner) {
       alert(`Reminder sent to ${owner.name} for payment`);

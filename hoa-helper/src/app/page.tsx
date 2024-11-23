@@ -15,25 +15,22 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-4">
           Welcome to the Homeowner Helper
         </h1>
-        <p className="text-gray-600 dark:text-gray-300 mt-2 text-center">
-          Please select your role to get started
-        </p>
       </header>
 
       {/* Buttons for Role Selection */}
       <div className="flex gap-6">
         <a
-          href="/property-owner"
+          href="/login"
           className="px-6 py-3 rounded-full bg-blue-600 text-white text-lg font-semibold shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105"
         >
-          Property Owner
+          Login
         </a>
-        <a
-          href="/admin"
+        {/* <a
+          href="/sign-up"
           className="px-6 py-3 rounded-full bg-blue-600 text-white text-lg font-semibold shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105"
         >
-          Admin
-        </a>
+          Sign Up
+        </a> */}
       </div>
 
       {/* Footer */}

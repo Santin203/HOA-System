@@ -34,9 +34,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                                 Property Owners
                             </a>
                         </li>
+
+                    
                         <li>
                             <a
-                                href="/admin"
+                                href="/settings"
                                 className="block py-2 px-4 rounded hover:dark:bg-gray-500 hover:text-white"
                             >
                                 Settings

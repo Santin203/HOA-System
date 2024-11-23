@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 
 export default function OwnerDashboard() {
   interface Payment {
-    id: number;
+    id: string;
     date: string; // Format: "DD-MM-YYYY"
     memo: string;
   }
 
   interface Owner {
-    id: number;
+    id: string;
     name: string;
     property: string;
     status: string; // "Paid" or "Pending"
@@ -18,22 +18,40 @@ export default function OwnerDashboard() {
 
   // Mock data for payments
   const [payments] = useState<Payment[]>([
-    { id: 1, date: "09-10-2024", memo: "Payment 1" },
-    { id: 1, date: "08-09-2024", memo: "Payment 2" },
-    { id: 1, date: "01-07-2024", memo: "Payment 3" },
-    { id: 1, date: "01-05-2024", memo: "Payment 4" },
+    { id: "1", date: "09-10-2024", memo: "Payment 1" },
+    { id: "1", date: "08-09-2024", memo: "Payment 2" },
+    { id: "1", date: "01-07-2024", memo: "Payment 3" },
+    { id: "1", date: "01-05-2024", memo: "Payment 4" },
+    { id: "2", date: "01-03-2024", memo: "Payment 5" },
+    { id: "2", date: "01-01-2024", memo: "Payment 6" },
+    { id: "3", date: "01-01-2024", memo: "Payment 7" },
+    { id: "4", date: "01-01-2024", memo: "Payment 8" },
   ]);
 
   // Mock data for owners
   const [owners] = useState<Owner[]>([
-    { id: 1, name: "John Doe", property: "123 Maple St", status: "Paid" },
-    { id: 2, name: "Jane Smith", property: "456 Oak St", status: "Pending" },
-    { id: 3, name: "Alice Johnson", property: "789 Pine St", status: "Paid" },
-    { id: 4, name: "Bob Brown", property: "101 Cedar Ave", status: "Pending" },
+    { id: "1", name: "John Doe", property: "123 Maple St", status: "Paid" },
+    { id: "2", name: "Jane Smith", property: "456 Oak St", status: "Pending" },
+    { id: "3", name: "Alice Johnson", property: "789 Pine St", status: "Paid" },
+    { id: "4", name: "Bob Brown", property: "101 Cedar Ave", status: "Pending" },
   ]);
 
-  const currentUserId = 1; // Hardcoded current user ID for demonstration
-  const currentUser = owners.find((owner) => owner.id === currentUserId);
+  // const currentUserId = localStorage.getItem("id")
+  // const currentUser = owners.find((owner) => owner.id === currentUserId);
+
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<Owner | undefined>(undefined);
+
+  useEffect(() => {
+    // Access localStorage only on the client side
+    const userId = localStorage.getItem("id");
+    setCurrentUserId(userId);
+
+    if (userId) {
+      const user = owners.find((owner) => owner.id === userId);
+      setCurrentUser(user);
+    }
+  }, [owners]);
 
   // State for date range filtering
   const [startDate, setStartDate] = useState<string>("01-01-2024");
@@ -118,7 +136,7 @@ export default function OwnerDashboard() {
 
       {/* Payments Table */}
       <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-gray-800">
-        <h2 className="text-lg font-semibold dark:text-gray-700 mb-4">
+        <h2 className="text-lg font-semibold dark:text-gray-200 mb-4">
           Payment History
         </h2>
         <table className="min-w-full text-gray-800 dark:text-gray-200">
