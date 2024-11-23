@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   ]);
 
   const [filter, setFilter] = useState<string>("All");
-//   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+//   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
 
   // Function to handle sending a reminder
   const sendReminder = (id: string): void => {
