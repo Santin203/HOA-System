@@ -88,6 +88,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
               <a
                 href="/"
                 className="block py-2 px-4 rounded hover:dark:bg-gray-500 hover:text-white"
+                onClick={() => localStorage.removeItem("id")}
               >
                 Log Out
               </a>
