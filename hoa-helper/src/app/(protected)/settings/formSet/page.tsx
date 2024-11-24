@@ -1,110 +1,135 @@
 "use client";
 
 import { useState } from "react";
+import { setPaymentMethod } from "../../../db/index"; // Adjust the import path as needed
 
 export default function AdminDashboard() {
-  interface Owner {
-    id: number;
-    name: string;
-    property: string;
-    status: string;
-  }
+  const [formData, setFormData] = useState({
+    name: "",
+    cardNum: "",
+    date: "",
+    securityCode: "",
+  });
 
-  // Sample data for demonstration purposes
-  const [owners, setOwners] = useState<Owner[]>([
-    { id: 1, name: "John Doe", property: "123 Maple St", status: "Paid" },
-    { id: 2, name: "Jane Smith", property: "456 Oak St", status: "Pending" },
-    { id: 3, name: "Alice Johnson", property: "789 Pine St", status: "Paid" },
-    { id: 4, name: "Bob Brown", property: "101 Cedar Ave", status: "Pending" },
-  ]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const [filter, setFilter] = useState<string>("All");
-//   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-// Function to handle sending a reminder
-const successBox = (id: number): void => {
-    const owner = owners.find((o) => o.id === id);
-    if (owner) {
-      alert(`Information Updated!`);
+    try {
+      // Prepare data for the database
+      const paymentInfo = {
+        name: formData.name,
+        cardNumber: formData.cardNum,
+        expirationYear: Number(formData.date.substring(0, 4)), // YYYY
+        expirationMonth: Number(formData.date.substring(5, 7)), // MM
+        securityCode: Number(formData.securityCode),
+      };
+
+      const userId = localStorage.getItem("id");
+      if (!userId) {
+        console.error("User ID not found in local storage.");
+        return;
+      }
+
+      const response = await setPaymentMethod(
+        Number(userId),
+        paymentInfo.name,
+        paymentInfo.cardNumber,
+        paymentInfo.expirationYear,
+        paymentInfo.expirationMonth,
+        paymentInfo.securityCode
+      );
+
+      if (response) {
+        successBox();
+        window.location.href = "/settings/viewPayInfo";
+      }
+    } catch (err) {
+      console.error("Error updating payment method:", err);
     }
   };
 
-  // Filtered data
-  const filteredOwners = owners.filter((owner) =>
-    filter === "All" ? true : owner.status === filter
-  );
+  const successBox = (): void => {
+    alert("Information Updated!");
+  };
 
   return (
     <div className="min-h-screen p-8">
-      {/* Header Section */}
       <header className="mb-10">
         <h1 className="text-3xl font-bold dark:text-gray-700">HOA Settings</h1>
         <p className="dark:text-gray-700 mt-2">Update payment settings.</p>
       </header>
-  
-      {/* Main Content */}
+
       <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-gray-800">
-  
-      {/* User Information Form */}
-      <form>
-        <fieldset>
-          <legend className="font-semibold text-lg mb-4">User Card Information</legend>
-          <label htmlFor="name" className="block mb-2">
-            Name as shows in card:
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            required
-            className="border rounded px-3 py-2 mb-4 w-full"
-          />
+        <form onSubmit={handleSubmit}>
+          <fieldset>
+            <legend className="font-semibold text-lg mb-4">User Card Information</legend>
+            <label htmlFor="name" className="block mb-2">
+              Name as shown on card:
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              onChange={handleChange}
+              value={formData.name}
+              className="border rounded px-3 py-2 mb-4 w-full"
+            />
 
-        <label>
-            Card number:
-        </label>
-        <input
-            type="card_num"
-            id="card_num"
-            name="card_num"
-            placeholder="1234 1234 1234 1234" 
-            required maxLength={16}
-            className="border rounded px-3 py-2 mb-4 w-full"
-          />
-        
-          <label htmlFor="dob" className="block mb-2">
-            Expiration date:
-          </label>
-          <input
-          //cambiar date a mes(2), ano(4)}!!!!!
-            type="date"
-            id="dob"
-            name="dob"
-            required
-            className="border rounded px-3 py-2 mb-4 w-full"
-          />
-        <label>
-            Security code (CVV):
-        </label>
-        <input
-            type="security_code"
-            id="security_code"
-            name="security_code"
-            placeholder="123" 
-            required maxLength={3}
-            className="border rounded px-3 py-2 mb-4 w-full"
-          />
+            <label>Card number:</label>
+            <input
+              type="text"
+              id="card_num"
+              name="cardNum"
+              placeholder="1234 1234 1234 1234"
+              required
+              maxLength={16}
+              onChange={handleChange}
+              value={formData.cardNum}
+              className="dark:text-gray border rounded px-3 py-2 mb-4 w-full"
+            />
 
-          <input
-            type="submit"
-            value="Submit"
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
-          />
-        </fieldset>
-      </form>
+            <label htmlFor="dob" className="block mb-2">
+              Expiration date:
+            </label>
+            <input
+              type="month"
+              id="start"
+              name="date"
+              required
+              onChange={handleChange}
+              value={formData.date}
+              className="dark:text-gray border rounded px-3 py-2 mb-4 w-full"
+            />
+
+            <label>Security code (CVV):</label>
+            <input
+              type="text"
+              id="security_code"
+              name="securityCode"
+              placeholder="123"
+              required
+              maxLength={3}
+              onChange={handleChange}
+              value={formData.securityCode}
+              className="dark:text-gray border rounded px-3 py-2 mb-4 w-full"
+            />
+
+            <a href="/settings">
+            <input
+              type="submit"
+              value="Submit"
+              className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+            />
+            </a>
+          </fieldset>
+        </form>
       </main>
     </div>
   );
-  
-
 }
