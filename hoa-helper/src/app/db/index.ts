@@ -68,3 +68,9 @@ export async function getPaymentMethod( userId: number) {
     
     return pmethod;
 }
+
+export async function getAllUsers() {
+    console.log("fetching all users");
+    const users = await prisma.user.findMany();
+    return users;
+}

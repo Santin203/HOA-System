@@ -2,13 +2,23 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getAllUsers } from "../db";
 
 const LoginPage: React.FC = () => {
   const [id, setId] = useState("");
   const router = useRouter();
+  const [registeredIds, setRegisteredIds] = useState<string[]>([]);
 
-  // Simulated list of registered IDs
-  const registeredIds = ["12345", "67890", "1", "2", "3"];
+  React.useEffect(() => {
+    const fetchUsers = async () => {
+    const users = await getAllUsers();
+    const ids = users.map((user) => user.id.toString());
+    setRegisteredIds(ids);
+    };
+    fetchUsers();
+  }, []);
+
+  
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();

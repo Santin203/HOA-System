@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAllStatusWithPid } from "@/app/db";
 
 export default function AdminDashboard() {
   interface Owner {
@@ -10,16 +11,36 @@ export default function AdminDashboard() {
     status: string;
   }
 
-  // Sample data for demonstration purposes
-  const [owners, setOwners] = useState<Owner[]>([
-    { id: "1", name: "John Doe", property: "123 Maple St", status: "Paid" },
-    { id: "2", name: "Jane Smith", property: "456 Oak St", status: "Pending" },
-    { id: "3", name: "Alice Johnson", property: "789 Pine St", status: "Paid" },
-    { id: "4", name: "Bob Brown", property: "101 Cedar Ave", status: "Pending" },
-  ]);
-
+  const [owners, setOwners] = useState<Owner[]>([]);
   const [filter, setFilter] = useState<string>("All");
-//   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch data from the database
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const currentMonth = new Date().toLocaleString('default', { month: 'short' });
+        const month = currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1);
+        const users = await getAllStatusWithPid(month);
+        console.log(users);
+        // Map database data to match the Owner interface
+        const ownersData = users.map((user: any) => ({
+          id: user.id,
+          name: user.name,
+          property: user.homeId || "Unknown Property", // Replace with a property field if available
+          status: user.payments[0]?.status ? "Paid" : "Pending",
+        }));
+        setOwners(ownersData);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   // Function to handle sending a reminder
   const sendReminder = (id: string): void => {
@@ -33,6 +54,14 @@ export default function AdminDashboard() {
   const filteredOwners = owners.filter((owner) =>
     filter === "All" ? true : owner.status === filter
   );
+
+  if (loading) {
+    return <p className="text-center">Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
 
   return (
     <div className="min-h-screen p-8">
@@ -60,7 +89,6 @@ export default function AdminDashboard() {
             <option value="Pending">Pending</option>
           </select>
         </div>
-
       </div>
 
       <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-gray-800">
