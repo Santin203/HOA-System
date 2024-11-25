@@ -61,16 +61,16 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen p-8">
       <header className="mb-10">
-        <h1 className="text-3xl font-bold dark:text-gray-700">HOA Settings</h1>
-        <p className="dark:text-gray-700 mt-2">Update payment settings.</p>
+        <h1 className="text-3xl font-bold text-gray-700">HOA Settings</h1>
+        <p className="text-gray-700 mt-2">Update payment settings.</p>
       </header>
 
-      <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-black-800">
+      <main className="overflow-x-auto shadow-md rounded-lg p-6 bg-white dark:bg-gray-800">
         <form onSubmit={handleSubmit}>
           <fieldset>
-            <legend className="dark:text-black font-semibold text-lg mb-4">User Card Information</legend>
+            <legend className="text-black dark:text-gray-200 font-semibold text-lg mb-4">User Card Information</legend>
             <label htmlFor="name" className="block mb-2">
-            <p className="dark:text-black-700 mt-2">Name as shown on card:</p>
+            <p className="text-black dark:text-gray-200 mt-2">Name as shown on card:</p>
             </label>
             <input
               type="text"
@@ -79,11 +79,11 @@ export default function AdminDashboard() {
               required
               onChange={handleChange}
               value={formData.name}
-              className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
+              className="text-black border rounded px-3 py-2 mb-4 w-full"
             />
 
             <label>
-            <p className="dark:text-black-700 mt-2">Card number:</p>
+            <p className="text-black dark:text-gray-200 mt-2">Card number:</p>
             </label>
             <input
               type="text"
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
             />
 
             <label htmlFor="dob" className="block mb-2">
-            <p className="dark:text-black-700 mt-2">Expiration date:</p>
+            <p className="text-black dark:text-gray-200 mt-2">Expiration date:</p>
             </label>
             <input
               type="month"
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
               className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
             />
 
-            <label><p className="dark:text-black-700 mt-2">Security code (CVV):</p></label>
+            <label><p className="text-black dark:text-gray-200 mt-2">Security code (CVV):</p></label>
             <input
               type="text"
               id="security_code"
