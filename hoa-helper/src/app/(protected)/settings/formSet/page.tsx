@@ -68,9 +68,9 @@ export default function AdminDashboard() {
       <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-black-800">
         <form onSubmit={handleSubmit}>
           <fieldset>
-            <legend className="font-semibold text-lg mb-4">User Card Information</legend>
+            <legend className="dark:text-black font-semibold text-lg mb-4">User Card Information</legend>
             <label htmlFor="name" className="block mb-2">
-              Name as shown on card:
+            <p className="dark:text-black-700 mt-2">Name as shown on card:</p>
             </label>
             <input
               type="text"
@@ -82,7 +82,9 @@ export default function AdminDashboard() {
               className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
             />
 
-            <label>Card number:</label>
+            <label>
+            <p className="dark:text-black-700 mt-2">Card number:</p>
+            </label>
             <input
               type="text"
               id="card_num"
@@ -97,7 +99,7 @@ export default function AdminDashboard() {
             />
 
             <label htmlFor="dob" className="block mb-2">
-              Expiration date:
+            <p className="dark:text-black-700 mt-2">Expiration date:</p>
             </label>
             <input
               type="month"
@@ -109,7 +111,7 @@ export default function AdminDashboard() {
               className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
             />
 
-            <label>Security code (CVV):</label>
+            <label><p className="dark:text-black-700 mt-2">Security code (CVV):</p></label>
             <input
               type="text"
               id="security_code"
