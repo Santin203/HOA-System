@@ -34,6 +34,7 @@ export default function AdminDashboard() {
         console.error("User ID not found in local storage.");
         return;
       }
+  
 
       const response = await setPaymentMethod(
         Number(userId),
@@ -64,7 +65,7 @@ export default function AdminDashboard() {
         <p className="dark:text-gray-700 mt-2">Update payment settings.</p>
       </header>
 
-      <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-gray-800">
+      <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-black-800">
         <form onSubmit={handleSubmit}>
           <fieldset>
             <legend className="font-semibold text-lg mb-4">User Card Information</legend>
@@ -78,7 +79,7 @@ export default function AdminDashboard() {
               required
               onChange={handleChange}
               value={formData.name}
-              className="border rounded px-3 py-2 mb-4 w-full"
+              className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
             />
 
             <label>Card number:</label>
@@ -89,9 +90,10 @@ export default function AdminDashboard() {
               placeholder="1234 1234 1234 1234"
               required
               maxLength={16}
+              minLength={16}
               onChange={handleChange}
               value={formData.cardNum}
-              className="dark:text-gray border rounded px-3 py-2 mb-4 w-full"
+              className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
             />
 
             <label htmlFor="dob" className="block mb-2">
@@ -104,7 +106,7 @@ export default function AdminDashboard() {
               required
               onChange={handleChange}
               value={formData.date}
-              className="dark:text-gray border rounded px-3 py-2 mb-4 w-full"
+              className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
             />
 
             <label>Security code (CVV):</label>
@@ -115,9 +117,10 @@ export default function AdminDashboard() {
               placeholder="123"
               required
               maxLength={3}
+              minLength={3}
               onChange={handleChange}
               value={formData.securityCode}
-              className="dark:text-gray border rounded px-3 py-2 mb-4 w-full"
+              className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
             />
 
             <a href="/settings">
