@@ -1,7 +1,7 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import { getAllStatusWithPid } from "@/app/db";
+import emailjs from "emailjs-com";  // Import emailjs
+import { getAllStatusWithPid } from "../../db/index"; // Adjust the import path as needed
 
 export default function AdminDashboard() {
   interface Owner {
@@ -9,6 +9,7 @@ export default function AdminDashboard() {
     name: string;
     property: string;
     status: string;
+    email: string; // Add an email property to each owner
   }
 
   const [owners, setOwners] = useState<Owner[]>([]);
@@ -24,12 +25,12 @@ export default function AdminDashboard() {
         const month = currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1);
         const users = await getAllStatusWithPid(month);
         console.log(users);
-        // Map database data to match the Owner interface
         const ownersData = users.map((user: any) => ({
           id: user.id,
           name: user.name,
-          property: user.homeId || "Unknown Property", // Replace with a property field if available
+          property: user.homeId || "Unknown Property",
           status: user.payments[0]?.status ? "Paid" : "Pending",
+          email: user.email || "example@gmail.com", // hardcoded email, replace with real field
         }));
         setOwners(ownersData);
       } catch (err) {
@@ -42,11 +43,35 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
-  // Function to handle sending a reminder
+  // Function to send email
+  const sendEmail = (name: string, email: string, subject: string, message: string): void => {
+    emailjs.init("nyUk3INa6W8JuMX21");
+    const templateParams = {
+      to_email: email,
+      subject: subject,
+      message: message,
+      from_name: "Admin",
+      to_name: name,
+    };
+
+    emailjs.send("service_8xks4aq", "template_klizmcs", templateParams)
+      .then((response) => {
+        console.log("Email sent successfully:", response);
+        alert("Email sent!");
+      })
+      .catch((error) => {
+        console.error("Email send error:", error);
+        alert("Failed to send email. Please try again.");
+      });
+  };
+
+  // Function to handle sending a reminder email
   const sendReminder = (id: string): void => {
     const owner = owners.find((o) => o.id === id);
     if (owner) {
-      alert(`Reminder sent to ${owner.name} for payment`);
+      const subject = `Payment Reminder for ${owner.name}`;
+      const message = `Dear ${owner.name},\n\nThis is a friendly reminder to complete your payment for the property at ${owner.property}. Please make the payment as soon as possible.\n\nThank you.`;
+      sendEmail(owner.name, owner.email, subject, message);
     }
   };
 
@@ -138,3 +163,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
