@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import emailjs from "emailjs-com";  // Import emailjs
-import { getAllStatusWithPid } from "../../db/index"; // Adjust the import path as needed
+import emailjs from "emailjs-com";
+import { getAllStatusWithPid } from "../../db/index";
+import Link from 'next/link';
 
 export default function AdminDashboard() {
   interface Owner {
@@ -9,13 +10,14 @@ export default function AdminDashboard() {
     name: string;
     property: string;
     status: string;
-    email: string; // Add an email property to each owner
+    email: string;
   }
 
   const [owners, setOwners] = useState<Owner[]>([]);
   const [filter, setFilter] = useState<string>("All");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  
 
   // Fetch data from the database
   useEffect(() => {
@@ -94,10 +96,14 @@ export default function AdminDashboard() {
         <h1 className="text-3xl font-bold dark:text-gray-700">
           HOA Admin Dashboard
         </h1>
-        <p className="dark:text-gray-700 mt-2">
+        <p className="dark:text-gray-700 mt-2 mb-4">
           View all property owners and manage payment statuses.
         </p>
+        <Link href="/admin/drafts" className="dark:bg-gray-700 text-white px-4 py-2 rounded-md shadow hover:dark:bg-gray-800 transition">
+          View Draft Emails
+        </Link>
       </header>
+
 
       <div className="flex justify-between items-center mb-6">
         <div>
