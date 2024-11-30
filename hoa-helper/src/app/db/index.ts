@@ -74,3 +74,21 @@ export async function getAllUsers() {
     const users = await prisma.user.findMany();
     return users;
 }
+
+export async function createEmailTemplate(subject: string, body: string) {
+    console.log("creating email template");
+    const temp = await prisma.emailTamplates.create({
+        data:{
+            subject: subject,
+            body: body
+        }});
+    return temp;
+}
+
+export async function getEmailTemplates() {
+    console.log("creating email template");
+    const temp = await prisma.emailTamplates.findMany({
+        select: {id : true, subject: true, body: true}
+        });
+    return temp;
+}

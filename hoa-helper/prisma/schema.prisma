@@ -48,3 +48,9 @@ model PaymentInfo {
   expDate     DateTime
   cvv         Int
 }
+
+model EmailTamplates {
+  id        Int       @id @default(autoincrement())
+  subject   String
+  body      String
+}
