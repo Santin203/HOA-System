@@ -2,15 +2,8 @@
 
 import { useState, useEffect } from "react";
 import emailjs from "emailjs-com";
-import { getAllStatusWithPid } from "../../../db/index";
+import { getAllStatusWithPid, getEmailTemplates } from "../../../db/index";
 import Link from "next/link";
-
-// Sample drafts data
-const drafts = [
-  { id: 1, subject: "Meeting Reminder", message: "Don’t forget about the meeting tomorrow at 10 AM." },
-  { id: 2, subject: "Payment Overdue", message: "Your payment is overdue. Please make the payment by this Friday." },
-  { id: 3, subject: "Event Invitation", message: "You are invited to our annual event this weekend. RSVP now!" },
-];
 
 export default function DraftsPage() {
   interface Owner {
@@ -19,7 +12,14 @@ export default function DraftsPage() {
     email: string;
   }
 
+  interface Template {
+    id: number;
+    subject: string;
+    body: string;
+  }
+
   const [owners, setOwners] = useState<Owner[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +37,10 @@ export default function DraftsPage() {
           email: user.email || "example@gmail.com", // hardcoded email, replace with real field
         }));
         setOwners(ownersData);
+
+        // Fetch templates from the database
+        const emailTemplates = await getEmailTemplates();
+        setTemplates(emailTemplates);
       } catch (err) {
         console.error("Error fetching data:", err);
         setError("Failed to load data. Please try again.");
@@ -48,17 +52,18 @@ export default function DraftsPage() {
   }, []);
 
   // Function to send an email
-  const sendEmail = (recipients: string[], subject: string, message: string): void => {
+  const sendEmail = (recipients: string[], subject: string, body: string): void => {
     emailjs.init("nyUk3INa6W8JuMX21");
     recipients.forEach((email) => {
       const templateParams = {
         to_email: email,
         subject: subject,
-        message: message,
+        message: body,
         from_name: "Admin",
       };
 
-      emailjs.send("service_8xks4aq", "template_11gz87f", templateParams)
+      emailjs
+        .send("service_8xks4aq", "template_11gz87f", templateParams)
         .then((response) => {
           console.log(`Email sent to ${email}:`, response);
         })
@@ -71,15 +76,15 @@ export default function DraftsPage() {
 
   // Function to handle sending a draft email
   const sendDraftEmail = (id: number): void => {
-    const draft = drafts.find((d) => d.id === id);
+    const draft = templates.find((t) => t.id === id);
     if (draft) {
       if (selectedRecipients.length === 0) {
         alert("Please select at least one recipient.");
         return;
       }
-      sendEmail(selectedRecipients, draft.subject, draft.message);
+      sendEmail(selectedRecipients, draft.subject, draft.body);
     } else {
-      alert("Draft not found.");
+      alert("Template not found.");
     }
   };
 
@@ -103,16 +108,16 @@ export default function DraftsPage() {
     <div className="min-h-screen bg-gray-100 py-8 px-6">
       <header className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold dark:text-gray-700">Draft Emails</h1>
+          <h1 className="text-3xl font-bold dark:text-gray-700">Email Templates</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            View and manage your saved email drafts.
+            View and manage your saved email templates.
           </p>
         </div>
         <Link
           href="/admin/create-draft"
           className="dark:bg-gray-700 text-white px-4 py-2 rounded-md shadow hover:dark:bg-gray-800 transition"
         >
-          Create New Draft
+          Create New Template
         </Link>
       </header>
 
@@ -135,15 +140,20 @@ export default function DraftsPage() {
           ))}
         </ul>
 
-        <h2 className="text-xl font-semibold mb-4 dark:text-gray-300">Drafts</h2>
-        {drafts.length > 0 ? (
+        <h2 className="text-xl font-semibold mb-4 dark:text-gray-300">Templates</h2>
+        {templates.length > 0 ? (
           <ul className="space-y-4">
-            {drafts.map((draft) => (
-              <li key={draft.id} className="p-4 bg-gray-50 rounded-md shadow-md dark:bg-gray-700">
-                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">{draft.subject}</h2>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">{draft.message}</p>
+            {templates.map((template) => (
+              <li
+                key={template.id}
+                className="p-4 bg-gray-50 rounded-md shadow-md dark:bg-gray-700"
+              >
+                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+                  {template.subject}
+                </h2>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">{template.body}</p>
                 <button
-                  onClick={() => sendDraftEmail(draft.id)}
+                  onClick={() => sendDraftEmail(template.id)}
                   className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-500 transition"
                 >
                   Send Email
@@ -153,7 +163,7 @@ export default function DraftsPage() {
           </ul>
         ) : (
           <p className="text-center text-gray-500 dark:text-gray-400">
-            No drafts available.
+            No templates available.
           </p>
         )}
       </main>
