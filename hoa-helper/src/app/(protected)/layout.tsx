@@ -78,6 +78,14 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ children }) => {
             </li>
             <li>
               <a
+                href="/notifications"
+                className="block py-2 px-4 rounded hover:dark:bg-gray-500 hover:text-white"
+              >
+                Notifications
+              </a>
+            </li>
+            <li>
+              <a
                 href="/settings"
                 className="block py-2 px-4 rounded hover:dark:bg-gray-500 hover:text-white"
               >
