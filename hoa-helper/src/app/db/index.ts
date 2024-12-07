@@ -86,9 +86,74 @@ export async function createEmailTemplate(subject: string, body: string) {
 }
 
 export async function getEmailTemplates() {
-    console.log("creating email template");
+    console.log("retrieving email template");
     const temp = await prisma.emailTamplates.findMany({
         select: {id : true, subject: true, body: true}
         });
     return temp;
+}
+
+export async function getRemindMethod(userId: number) {
+    console.log("retrieving remind method of user", userId);
+    const method = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {remindMethod : true}
+        });
+    return method;
+}
+
+export async function setRemindMethod(userId: number, remindMethod: string) {
+    console.log("setting remind method");
+    const method = await prisma.user.update({
+        where: { id: userId },
+        data: {remindMethod: remindMethod},
+        });
+    return method;
+}
+
+
+export async function getRemindTime(userId: number) {
+    console.log("retrieving remind method of user", userId);
+    const method = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {remindTime : true}
+        });
+    return method;
+}
+
+export async function setRemindTime(userId: number, remindYear: number, remindMonth: number, remindDay: number) {
+    console.log("setting remind method");
+    const method = await prisma.user.update({
+        where: { id: userId },
+        data: {remindTime: new Date(remindYear, remindMonth, remindDay)},
+        });
+    return method;
+}
+
+export async function getRemindFreq(userId: number) {
+    console.log("retrieving remind method of user", userId);
+    const method = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {remindFrequency : true}
+        });
+    return method;
+}
+
+export async function setRemindFreq(userId: number, remindFrequency: string) {
+    console.log("setting remind method");
+    const method = await prisma.user.update({
+        where: { id: userId },
+        data: {remindFrequency: remindFrequency},
+        });
+    return method;
+}
+
+
+
+export async function getUserInfo(userId: number) {
+    console.log("setting remind method");
+    const user = await prisma.user.findUnique({
+        where: { id: userId }
+        });
+    return user;
 }

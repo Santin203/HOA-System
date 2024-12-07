@@ -1,6 +1,5 @@
 
 
-import * as db from "../db/index";
 
 
 async function UsersList() 
@@ -131,30 +130,134 @@ async function UsersList()
   //   console.error(error);
   // }
 
-  try {
-      const pmethod = await db.getPaymentMethod( 2 ); 
-      console.log(pmethod);
+  // try {
+  //     const pmethod = await db.getPaymentMethod( 2 ); 
+  //     console.log(pmethod);
   
-      if (pmethod === null) {
-            return (
-              <div>
-                <h1>USER NOT FOUND</h1>
-              </div>
-            );
-          }
-      return (
-        <div>
-          <h1>payment method of {pmethod.userId}</h1>
-          <ul>
-            <li>
-              The user with user id {pmethod.userId} has payment method {pmethod.nameInCard} - {pmethod.cardNum} - {pmethod.expDate.toDateString()} - {pmethod.cvv}
-            </li>
-          </ul>
-        </div>
-      );}
-    catch (error) {
-      console.error(error);
-    }
+  //     if (pmethod === null) {
+  //           return (
+  //             <div>
+  //               <h1>USER NOT FOUND</h1>
+  //             </div>
+  //           );
+  //         }
+  //     return (
+  //       <div>
+  //         <h1>payment method of {pmethod.userId}</h1>
+  //         <ul>
+  //           <li>
+  //             The user with user id {pmethod.userId} has payment method {pmethod.nameInCard} - {pmethod.cardNum} - {pmethod.expDate.toDateString()} - {pmethod.cvv}
+  //           </li>
+  //         </ul>
+  //       </div>
+  //     );}
+  //   catch (error) {
+  //     console.error(error);
+  //   }
+
+  // try {
+  //   const rmethod = await db.setRemindMethod( 2 , 'email'); 
+  //   console.log(rmethod);
+
+  //   if (rmethod === null) {
+  //         return (
+  //           <div>
+  //             <h1>USER NOT FOUND</h1>
+  //           </div>
+  //         );
+  //       }
+  //   return (
+  //     <div>
+  //       <h1>payment method of {2}</h1>
+  //       <ul>
+  //         <li>
+  //           The user with user id {2} has remind method {rmethod.remindMethod}
+  //         </li>
+  //       </ul>
+  //     </div>
+  //   );}
+  // catch (error) {
+  //   console.error(error);
+  // }
+
+
+  // try {
+  //   const rmethod = await db.getRemindMethod( 2 ); 
+  //   console.log(rmethod);
+
+  //   if (rmethod === null) {
+  //         return (
+  //           <div>
+  //             <h1>USER NOT FOUND</h1>
+  //           </div>
+  //         );
+  //       }
+  //   return (
+  //     <div>
+  //       <h1>payment method of {2}</h1>
+  //       <ul>
+  //         <li>
+  //           The user with user id {2} has remind method {rmethod.remindMethod}
+  //         </li>
+  //       </ul>
+  //     </div>
+  //   );}
+  // catch (error) {
+  //   console.error(error);
+  // }
+
+  // try {
+  //   const rtime = await db.getRemindTime( 2 ); 
+  //   console.log(rtime);
+
+  //   if (rtime === null) {
+  //         return (
+  //           <div>
+  //             <h1>USER NOT FOUND</h1>
+  //           </div>
+  //         );
+  //       }
+  //   return (
+  //     <div>
+  //       <h1>payment method of {2}</h1>
+  //       <ul>
+  //         <li>
+  //           The user with user id {2} has remind time {rtime.remindTime?.toDateString()}
+  //         </li>
+  //       </ul>
+  //     </div>
+  //   );}
+  // catch (error) {
+  //   console.error(error);
+  // }
+  
+
+  // try {
+  //   const rtime = await db.setRemindTime( 2 , 2024, 11, 31); 
+  //   console.log(rtime);
+
+  //   if (rtime === null) {
+  //         return (
+  //           <div>
+  //             <h1>USER NOT FOUND</h1>
+  //           </div>
+  //         );
+  //       }
+  //   return (
+  //     <div>
+  //       <h1>payment method of {2}</h1>
+  //       <ul>
+  //         <li>
+  //           The user with user id {2} has remind time {rtime.remindTime?.toDateString()}
+  //         </li>
+  //       </ul>
+  //     </div>
+  //   );}
+  // catch (error) {
+  //   console.error(error);
+  // }
+
+
 }
 
   export default UsersList

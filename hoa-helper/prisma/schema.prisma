@@ -21,6 +21,9 @@ model User {
   payments    UserPayments[]
   paymentInfo PaymentInfo?
   admin        Boolean           @default(false)      
+  remindMethod String            @default("email")
+  remindFrequency String?        
+  remindTime   DateTime?         
 }
 
 model Payment {
