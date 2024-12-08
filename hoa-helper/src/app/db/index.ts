@@ -157,3 +157,30 @@ export async function getUserInfo(userId: number) {
         });
     return user;
 }
+
+export async function getDelinquent() {
+    console.log("getting delinquent users");
+    const users = await prisma.userPayments.groupBy({
+        by: ['userId'],
+        where: { status: false },
+        _count:{_all: true},
+        having: {
+            paymentId: {
+                _count: {
+                    gte: 3
+                }
+            }
+        }
+    });
+    return users;
+}
+
+
+export async function getPending(userId: number) {
+    console.log("getting pending payments of user", userId);
+    const users = await prisma.userPayments.findMany({
+        where: {userId : userId, status: false},
+        include: { payment: true, user : {select: {name: true}} }
+    });
+    return users;
+}

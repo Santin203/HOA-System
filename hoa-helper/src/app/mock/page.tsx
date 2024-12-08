@@ -257,6 +257,56 @@ async function UsersList()
   //   console.error(error);
   // }
 
+  // try {
+  //   const users = await db.getDelinquent( ); 
+  //   console.log(users);
+
+  //   if (users === null) {
+  //         return (
+  //           <div>
+  //             <h1>USER NOT FOUND</h1>
+  //           </div>
+  //         );
+  //       }
+  //   return (
+  //     <div>
+  //       <h1>Delinquent users </h1>
+  //       <ul>
+  //         <li>
+            
+  //         </li>
+  //       </ul>
+  //     </div>
+  //   );}
+  // catch (error) {
+  //   console.error(error);
+  // }
+
+
+  // try {
+  //   const users = await db.getPending(2); 
+  //   console.log(users);
+
+  //   if (users === null) {
+  //         return (
+  //           <div>
+  //             <h1>USER NOT FOUND</h1>
+  //           </div>
+  //         );
+  //       }
+  //   return (
+  //     <div>
+  //       <h1>Delinquent users </h1>
+  //       <ul>
+  //         <li>
+            
+  //         </li>
+  //       </ul>
+  //     </div>
+  //   );}
+  // catch (error) {
+  //   console.error(error);
+  // }
 
 }
 
