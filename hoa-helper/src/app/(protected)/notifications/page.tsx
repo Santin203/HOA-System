@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getUserPriv } from "../../db/index"; // Import only getUserPriv function
+import { getUserPriv, getPending } from "../../db/index"; 
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -9,37 +9,58 @@ export default function NotificationsPage() {
   const [startDate, setStartDate] = useState("2024-01-01");
   const [endDate, setEndDate] = useState("2024-12-31");
 
-  // Dummy notifications for the UI
-  const dummyNotifications = [
-    {
-      id: 1,
-      message: "Your payment for March is due.",
-      date: new Date("2024-03-01"),
-      type: "Reminder",
-    },
-    {
-      id: 2,
-      message: "Community event scheduled for April 15th.",
-      date: new Date("2024-04-01"),
-      type: "Event",
-    },
-    {
-      id: 3,
-      message: "Your account has been updated successfully.",
-      date: new Date("2024-02-20"),
-      type: "System",
-    },
-  ];
+  // Track added payment IDs to prevent duplicates
+  const addedPaymentIds = new Set<string>();
 
-  // Fetch user data and set dummy notifications
+  // Fetch user data and pending payments
   useEffect(() => {
     const userId = localStorage.getItem("id");
     if (userId) {
-      getUserPriv(parseInt(userId, 10))
-        .catch((error) => console.error("Error fetching user data:", error));
+      const userIdNumber = parseInt(userId, 10);
+
+      // Fetch user privileges
+      getUserPriv(userIdNumber).catch((error) =>
+        console.error("Error fetching user privileges:", error)
+      );
+
+      // Fetch pending payments
+      getPending(userIdNumber)
+        .then((pendingPayments) => {
+          const newNotifications = pendingPayments
+            .filter(
+              (userPayment: any) => !addedPaymentIds.has(userPayment.paymentId) // Avoid duplicates
+            )
+            .map((userPayment: any) => {
+              // Mark payment as added
+              addedPaymentIds.add(userPayment.paymentId);
+
+              return {
+                id: `payment-${userPayment.userId}-${userPayment.paymentId}`, // Unique key
+                message: `Payment of $${userPayment.payment.amount.toFixed(
+                  2
+                )} due on ${new Date(
+                  userPayment.payment.dueDate
+                ).toLocaleDateString()} is pending.`,
+                date: new Date(userPayment.payment.dueDate),
+                type: "Payment",
+              };
+            });
+
+          // Add new notifications without duplicates
+          setNotifications((prev) => [...prev, ...newNotifications]);
+        })
+        .catch((error) =>
+          console.error("Error fetching pending payments:", error)
+        );
     }
-    setNotifications(dummyNotifications);
   }, []);
+
+  const formatDayMonth = (date: Date) => {
+    const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Ensure two-digit month
+    const day = date.getDate().toString().padStart(2, "0"); // Ensure two-digit day
+    return `${year}/${month}/${day}`;
+  };
 
   // Automatically apply filters and sort notifications whenever dates or notifications change
   useEffect(() => {
@@ -106,11 +127,11 @@ export default function NotificationsPage() {
           <tbody>
             {filteredNotifications.map((notification) => (
               <tr
-                key={notification.id}
+                key={notification.id} // Unique key
                 className="border-t border-gray-200 dark:border-gray-700"
               >
                 <td className="px-4 py-2">
-                  {notification.date.toLocaleDateString()}
+                {formatDayMonth(notification.date)}
                 </td>
                 <td className="px-4 py-2">{notification.type}</td>
                 <td className="px-4 py-2">{notification.message}</td>
@@ -122,5 +143,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-
-

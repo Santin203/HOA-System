@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,46 +8,46 @@ datasource db {
 }
 
 model User {
-  id          Int               @id @default(autoincrement())
-  email       String            @unique
-  homeId      String
-  name        String
-  payments    UserPayments[]
-  paymentInfo PaymentInfo?
-  admin        Boolean           @default(false)      
-  remindMethod String            @default("email")
-  remindFrequency String?        
-  remindTime   DateTime?         
+  id              Int            @id @default(autoincrement())
+  email           String         @unique
+  homeId          String
+  name            String
+  admin           Boolean        @default(false)
+  remindMethod    String         @default("email")
+  remindTime      DateTime?
+  remindFrequency String?
+  paymentInfo     PaymentInfo?
+  payments        UserPayments[]
 }
 
 model Payment {
-  id        String      @id
-  dueDate  DateTime 
-  amount    Float
-  users     UserPayments[]
+  id      String         @id
+  dueDate DateTime
+  amount  Float
+  users   UserPayments[]
 }
 
 model UserPayments {
-  user        User      @relation(fields: [userId], references: [id])
-  userId      Int       
-  payment     Payment   @relation(fields: [paymentId], references: [id])
-  paymentId   String    
-  status      Boolean   @default(false)
+  userId    Int
+  paymentId String
+  status    Boolean @default(false)
+  payment   Payment @relation(fields: [paymentId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
 
   @@id([userId, paymentId])
 }
 
 model PaymentInfo {
-  user        User      @relation(fields: [userId], references: [id])
-  userId      Int       @id
-  nameInCard  String
-  cardNum     String       @unique
-  expDate     DateTime
-  cvv         Int
+  userId     Int      @id
+  nameInCard String
+  cardNum    String   @unique
+  expDate    DateTime
+  cvv        Int
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model EmailTamplates {
-  id        Int       @id @default(autoincrement())
-  subject   String
-  body      String
+  id      Int    @id @default(autoincrement())
+  subject String
+  body    String
 }
