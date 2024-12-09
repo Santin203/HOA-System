@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import emailjs from "emailjs-com";
-import { getAllStatusWithPid } from "../../db/index";
+import { getAllStatusWithPid, getDelinquent } from "../../db/index";
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -13,10 +13,16 @@ export default function AdminDashboard() {
     email: string;
   }
 
+  interface DelinquentOwner {
+    userId: string;
+    count: number;
+  }
+
   const [owners, setOwners] = useState<Owner[]>([]);
   const [filter, setFilter] = useState<string>("All");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [delinquentOwners, setDelinquentOwners] = useState<DelinquentOwner[]>([]);
   
 
   // Fetch data from the database
@@ -43,6 +49,24 @@ export default function AdminDashboard() {
       }
     }
     fetchData();
+  }, []);
+
+  // Fetch data for delinquent owners
+  useEffect(() => {
+    async function fetchDelinquents() {
+      try {
+        const delinquents = await getDelinquent();
+        const delinquentOwnersData = delinquents.map((delinquent: any) => ({
+          userId: delinquent.userId,
+          count: delinquent._count._all,
+        }));
+        setDelinquentOwners(delinquentOwnersData);
+      } catch (err) {
+        console.error("Error fetching delinquent owners data:", err);
+        setError("Failed to load delinquent owners data. Please try again.");
+      }
+    }
+    fetchDelinquents();
   }, []);
 
   // Function to send email
@@ -122,50 +146,96 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-gray-800">
-        <table className="min-w-full text-gray-800 dark:text-gray-200">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 text-left">Owner Name</th>
-              <th className="px-4 py-2 text-left">Property</th>
-              <th className="px-4 py-2 text-left">Payment Status</th>
-              <th className="px-4 py-2 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredOwners.map((owner) => (
-              <tr
-                key={owner.id}
-                className="border-t border-gray-200 dark:border-gray-700"
-              >
-                <td className="px-4 py-2">{owner.name}</td>
-                <td className="px-4 py-2">{owner.property}</td>
-                <td className="px-4 py-2">
-                  <span
-                    className={`px-2 py-1 rounded-full text-sm font-semibold ${
-                      owner.status === "Paid"
-                        ? "bg-green-200 text-green-800"
-                        : "bg-red-200 text-red-800"
-                    }`}
-                  >
-                    {owner.status}
-                  </span>
-                </td>
-                <td className="px-4 py-2 text-center">
-                  {owner.status === "Pending" && (
-                    <button
-                      onClick={() => sendReminder(owner.id)}
-                      className="text-sm text-white dark:bg-gray-600 hover:dark:bg-gray-500 px-3 py-1 rounded"
-                    >
-                      Send Reminder
-                    </button>
-                  )}
-                </td>
+      <section>
+        <h2 className="text-2xl font-semibold dark:text-gray-700 mb-4">Property Owners</h2>
+        <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-gray-800">
+          <table className="min-w-full text-gray-800 dark:text-gray-200">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left">Owner Name</th>
+                <th className="px-4 py-2 text-left">Property</th>
+                <th className="px-4 py-2 text-left">Payment Status</th>
+                <th className="px-4 py-2 text-center">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </main>
+            </thead>
+            <tbody>
+              {filteredOwners.map((owner) => (
+                <tr
+                  key={owner.id}
+                  className="border-t border-gray-200 dark:border-gray-700"
+                >
+                  <td className="px-4 py-2">{owner.name}</td>
+                  <td className="px-4 py-2">{owner.property}</td>
+                  <td className="px-4 py-2">
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm font-semibold ${
+                        owner.status === "Paid"
+                          ? "bg-green-200 text-green-800"
+                          : "bg-red-200 text-red-800"
+                      }`}
+                    >
+                      {owner.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    {owner.status === "Pending" && (
+                      <button
+                        onClick={() => sendReminder(owner.id)}
+                        className="text-sm text-white dark:bg-gray-600 hover:dark:bg-gray-500 px-3 py-1 rounded"
+                      >
+                        Send Reminder
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </main>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-2xl font-semibold dark:text-gray-700 mb-4">
+          Delinquent Owners
+        </h2>
+        <main className="overflow-x-auto bg-white shadow-md rounded-lg p-6 dark:bg-gray-800">
+          <table className="min-w-full text-gray-800 dark:text-gray-200">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left">Owner Name</th>
+                <th className="px-4 py-2 text-left">Property</th>
+                <th className="px-4 py-2 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {delinquentOwners.map((delinquent) => {
+                const owner = owners.find((o) => o.id === delinquent.userId);
+                if (owner) {
+                  return (
+                    <tr
+                      key={delinquent.userId}
+                      className="border-t border-gray-200 dark:border-gray-700"
+                    >
+                      <td className="px-4 py-2">{owner.name}</td>
+                      <td className="px-4 py-2">{owner.property}</td>
+                      <td className="px-4 py-2 text-center">
+                        <button
+                          onClick={() => sendReminder(owner.id)}
+                          className="text-sm text-white dark:bg-gray-600 hover:dark:bg-gray-500 px-3 py-1 rounded"
+                        >
+                          Send Reminder
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                }
+                return null; // Ignore users not found in owners
+              })}
+            </tbody>
+          </table>
+        </main>
+      </section>
+
     </div>
   );
 }
