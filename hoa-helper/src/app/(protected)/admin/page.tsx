@@ -204,6 +204,7 @@ export default function AdminDashboard() {
               <tr>
                 <th className="px-4 py-2 text-left">Owner Name</th>
                 <th className="px-4 py-2 text-left">Property</th>
+                <th className="px-4 py-2 text-left">Number of Delinquencies</th>
                 <th className="px-4 py-2 text-center">Actions</th>
               </tr>
             </thead>
@@ -218,6 +219,7 @@ export default function AdminDashboard() {
                     >
                       <td className="px-4 py-2">{owner.name}</td>
                       <td className="px-4 py-2">{owner.property}</td>
+                      <td className="px-4 py-2">{delinquent.count}</td>
                       <td className="px-4 py-2 text-center">
                         <button
                           onClick={() => sendReminder(owner.id)}
