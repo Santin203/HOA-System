@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { setPaymentMethod } from "../../../db/index"; // Adjust the import path as needed
+import { setRemindFreq, setRemindMethod, setRemindTime } from "../../../db/index"; // Adjust the import path as needed
 
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
     name: "",
-    cardNum: "",
-    date: "",
-    securityCode: "",
+    period: "",
+    method: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,12 +20,10 @@ export default function AdminDashboard() {
 
     try {
       // Prepare data for the database
-      const paymentInfo = {
-        name: formData.name,
-        cardNumber: formData.cardNum,
-        expirationYear: Number(formData.date.substring(0, 4)), // YYYY
-        expirationMonth: Number(formData.date.substring(5, 7)), // MM
-        securityCode: Number(formData.securityCode),
+      const reminderInfo = {
+        userId: formData.name,
+        reminder_period: formData.period,
+        reminder_method: formData.method,
       };
 
       const userId = localStorage.getItem("id");
@@ -36,18 +33,28 @@ export default function AdminDashboard() {
       }
   
 
-      const response = await setPaymentMethod(
+      const response = await setRemindFreq(
         Number(userId),
-        paymentInfo.name,
-        paymentInfo.cardNumber,
-        paymentInfo.expirationYear,
-        paymentInfo.expirationMonth,
-        paymentInfo.securityCode
+        reminderInfo.reminder_period
       );
 
-      if (response) {
+      const response2 = await setRemindMethod(
+        Number(userId),
+        reminderInfo.reminder_method
+      );
+
+      const n = new Date();
+      n.setMonth(n.getMonth()+1);
+      n.setDate(1);
+      
+      const response3 = await setRemindTime(
+        Number(userId),
+        n.getFullYear(), n.getMonth(), n.getDate()
+      );
+
+      if (response && response2 && response3) {
         successBox();
-        window.location.href = "/settings/viewPayInfo";
+        window.location.href = "/settings";
       }
     } catch (err) {
       console.error("Error updating payment method:", err);
@@ -66,75 +73,55 @@ export default function AdminDashboard() {
       </header>
 
       <main className="overflow-x-auto shadow-md rounded-lg p-6 bg-white dark:bg-gray-800">
-        <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
           <fieldset>
-            <legend className="text-black dark:text-gray-200 font-semibold text-lg mb-4">User Card Information</legend>
-            <label htmlFor="name" className="block mb-2">
-            <p className="text-black dark:text-gray-200 mt-2">Name as shown on card:</p>
+            <legend className="text-black dark:text-gray-200 font-semibold text-lg mb-4">
+              User Payment Period
+            </legend>
+
+            {/* Remind Period (select input) */}
+            <label htmlFor="reminder_period" className="block mb-2">
+              <p className="text-black dark:text-gray-200 mt-2">Remind Period:</p>
             </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
+            <select
+              id="reminder_period"
+              name="period"
               required
               onChange={handleChange}
-              value={formData.name}
-              className="text-black border rounded px-3 py-2 mb-4 w-full"
-            />
+              value={formData.period}
+              className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
+            >
+              <option value="" disabled>Select Period</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+            </select>
 
-            <label>
-            <p className="text-black dark:text-gray-200 mt-2">Card number:</p>
+            {/* Remind Method (select input) */}
+            <label htmlFor="reminder_method" className="block mb-2">
+              <p className="text-black dark:text-gray-200 mt-2">Remind Method:</p>
             </label>
-            <input
-              type="text"
-              id="card_num"
-              name="cardNum"
-              placeholder="1234 1234 1234 1234"
-              required
-              maxLength={16}
-              minLength={16}
-              onChange={handleChange}
-              value={formData.cardNum}
-              className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
-            />
-
-            <label htmlFor="dob" className="block mb-2">
-            <p className="text-black dark:text-gray-200 mt-2">Expiration date:</p>
-            </label>
-            <input
-              type="month"
-              id="start"
-              name="date"
+            <select
+              id="reminder_method"
+              name="method"
               required
               onChange={handleChange}
-              value={formData.date}
+              value={formData.method}
               className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
-            />
+            >
+              <option value="" disabled>Select Method</option>
+              <option value="Email">Email</option>
+              <option value="SMS">SMS</option>
+            </select>
 
-            <label><p className="text-black dark:text-gray-200 mt-2">Security code (CVV):</p></label>
-            <input
-              type="text"
-              id="security_code"
-              name="securityCode"
-              placeholder="123"
-              required
-              maxLength={3}
-              minLength={3}
-              onChange={handleChange}
-              value={formData.securityCode}
-              className="dark:text-black border rounded px-3 py-2 mb-4 w-full"
-            />
-
-            <a href="/settings">
+            {/* Submit Button */}
             <input
               type="submit"
               value="Submit"
               className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
             />
-            </a>
           </fieldset>
         </form>
-      </main>
+    </main>
     </div>
   );
 }

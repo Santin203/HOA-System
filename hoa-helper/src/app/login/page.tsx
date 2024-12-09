@@ -2,12 +2,19 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAllUsers } from "../db";
+import { getAllUsers, setRemindTime } from "../db";
+import { getUserInfo } from "../db/index"; 
+import { getStatusWithUidPid } from "../db/index"; 
+import emailjs from "emailjs-com";
+
 
 const LoginPage: React.FC = () => {
   const [id, setId] = useState("");
   const router = useRouter();
   const [registeredIds, setRegisteredIds] = useState<string[]>([]);
+  const [UserInfo, setUserInfo] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -18,22 +25,82 @@ const LoginPage: React.FC = () => {
     fetchUsers();
   }, []);
 
-  
+  // Function to send email
+  const sendEmail = (name: string, email: string, subject: string, message: string): void => {
+    emailjs.init("nyUk3INa6W8JuMX21");
+    const templateParams = {
+      to_email: email,
+      subject: subject,
+      message: message,
+      from_name: "Admin",
+      to_name: name,
+    };
 
-  const handleSubmit = (event: React.FormEvent) => {
+    emailjs.send("service_8xks4aq", "template_klizmcs", templateParams)
+      .then((response) => {
+        console.log("Email sent successfully:", response);
+        alert("Email sent!");
+      })
+      .catch((error) => {
+        console.error("Email send error:", error);
+        alert("Failed to send email. Please try again.");
+      });
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     // Check if the ID is registered
-    if (registeredIds.includes(id)) {
-      // Store ID in localStorage and navigate to /owner
+    if (registeredIds.includes(id)) 
+    {
       localStorage.setItem("id", id);
+      const userInfo = await getUserInfo(Number(id)); // Fetch user info
+      setUserInfo(userInfo);
+     
+      if (userInfo) 
+      {
+        if(userInfo.remindTime)
+        {
+          const today = new Date();
+          const record = await getStatusWithUidPid(Number(id),month[today.getMonth()])
+          
+          if (today.getTime() >= userInfo.remindTime.getTime())
+          {
+            if(record && record.status == false)
+            {
+              await sendEmail(
+              userInfo.name,
+              userInfo.email,
+              "Automatic Payment Reminder",
+              "This is an automatic payment reminder from HOA. Please do not reply."
+              );
+            }
+            if(userInfo.remindFrequency && userInfo.remindFrequency == "Weekly")
+            {
+              const next = new Date();
+              next.setDate(today.getDate() + 7);
+              await setRemindTime(Number(id), next.getFullYear(), 
+                next.getMonth(), next.getDate());
+            }
+            else // 1 months by default
+            {
+              const next = new Date();
+              next.setMonth(today.getMonth() + 1);
+              await setRemindTime(Number(id), next.getFullYear(), 
+                next.getMonth(), next.getDate());
+            }
+          }
+            
+        }
+      }
       router.push("/owner");
-    } else {
+    } 
+    else 
+    {
       // Notify user that they need to sign up
       alert("This ID is not registered. Please sign up.");
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 shadow-md rounded-lg p-8">
