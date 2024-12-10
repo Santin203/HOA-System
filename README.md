@@ -72,3 +72,51 @@ To run the project locally, you need to have **Node.js** and **npm** installed. 
    To stop the local server, press `CTRL + C` in the terminal.
 
 ---
+
+### Steps to Run Locally After Pull:
+This repo might be updated once in a while, therefore, you need to run the following commands to updated the dependencies before running the webapp locally:
+
+1. **Pull the repository**
+   After making sure that the directory is correct, that is, under the hoa-helper folder, run:
+   ```bash
+   git pull
+   ```
+   to pull and update the repository.
+   
+2. **Update Dependencies**
+   After pulling the repo, under the same directory, run:
+   ```bash
+   npm install
+   ```
+   to update the dependencies.
+
+3. **Update Local Database**
+   Run the commands:
+   ```bash
+   npx prisma db pull
+   ```
+   and
+   ```bash
+   npx prisma generate
+   ```
+   to update the local database schema.
+
+4. **Run the Application:**
+
+   To start the development server, run:
+
+   ```bash
+   npm run dev
+   ```
+
+   This will run the web application locally at [http://localhost:3000](http://localhost:3000).
+
+5. **Stopping the Local Server:**
+
+   To stop the local server, press `CTRL + C` in the terminal.
+
+
+
+
+
+
